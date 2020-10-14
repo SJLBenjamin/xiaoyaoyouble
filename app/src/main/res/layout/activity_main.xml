@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:id="@+id/lv_reissue"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:visibility="gone"></ListView>
+
+    <TextView
+        android:id="@+id/tv_rea_line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/holo_red_light"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="发送指令:" />
+
+            <TextView
+                android:id="@+id/tv_send_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="时间同步" />
+
+                <Button
+                    android:id="@+id/bt_reconnect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="重新搜索" />
+
+                <Button
+                    android:id="@+id/bt_device_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设备列表" />
+
+                <Switch
+                    android:checked="true"
+                    android:id="@+id/sw_auto_connect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="自动连接" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_start_debug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="启动调试模式" />
+
+                <Button
+                    android:id="@+id/bt_stop_debug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="关闭调试模式" />
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_function_8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="产生虚拟数据" />
+
+                <Button
+                    android:id="@+id/bt_function_9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="清除id" />
+                <TextView
+                    android:id="@+id/tv_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+   <!--         <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_output_hight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="输出-0.9V" />
+
+                <Button
+                    android:id="@+id/bt_output_low"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="输出-0.5V" />
+
+
+                <TextView
+                    android:id="@+id/tv_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_ina_z_open"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="INA333正极打开" />
+
+                <Button
+                    android:id="@+id/bt_ina_z_close"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="INA333正极关闭" />
+
+                <Button
+                    android:id="@+id/bt_output_hight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="输出-0.9V" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_ina_f_open"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="INA333负极打开" />
+
+                <Button
+                    android:id="@+id/bt_ina_f_close"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="INA333负极关闭" />
+
+                <Button
+                    android:id="@+id/bt_output_low"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="输出-0.5V" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="获取版本号" />
+
+                <TextView
+                    android:id="@+id/tv_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_read_test_cmd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="读取参数命令" />
+
+                <TextView
+                    android:id="@+id/tv_k_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_b_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_set_test_cmd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设置参数命令" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="k值:" />
+
+                <EditText
+                    android:id="@+id/et_k_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="b值:" />
+
+                <EditText
+                    android:id="@+id/et_b_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_reissue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="补发" />
+
+                <Button
+                    android:id="@+id/bt_time_select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="时间选择" />
+
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="序号:" />
+
+                <EditText
+                    android:id="@+id/et_serial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone" />
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="增量:" />
+
+                <EditText
+                    android:id="@+id/et_bf_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone" />
+                <Button
+                    android:id="@+id/bt_close"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="关闭" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_zl_reissue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="增量补发" />
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_set_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设置ID" />
+
+                <Button
+                    android:id="@+id/bt_set_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="时间选择" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ID:" />
+
+                <EditText
+                    android:id="@+id/et_serial_set_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_restart_send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="重发" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="序号:" />
+
+                <EditText
+                    android:id="@+id/et_restart_send_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_read_singer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="读单条内存" />
+
+                <EditText
+                    android:id="@+id/et_retransmissions_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="序号"
+                    android:inputType="number" />
+
+                <Button
+                    android:id="@+id/bt_retransmissions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="读指定内存" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/bt_app_device_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设备当前状态" />
+                <Button
+                    android:id="@+id/bt_device_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="获取设备时间" />
+            </LinearLayout>
+
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_bind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="绑定" />
+
+                <EditText
+                    android:id="@+id/et_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="13612874251" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_connect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="保持连接" />
+
+                <Button
+                    android:id="@+id/bt_unbind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="解绑" />
+
+                <Button
+                    android:id="@+id/bt_qz_unbind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="强制解绑" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_issue_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="所有数据页面" />
+
+
+
+                <Button
+                    android:id="@+id/bt_for_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="循环启动" />
+                <Button
+                    android:id="@+id/bt_start_no_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:text="不清0启动" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_app_start_cmd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="app启动命令" />
+
+                <Button
+                    android:id="@+id/bt_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="延时采集_启动" />
+
+                <Button
+                    android:id="@+id/bt_app_end_cmd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="app结束命令" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/bt_app_pause_cmd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="app暂停命令" />
+
+
+                <Button
+                    android:id="@+id/bt_app_continue_cmd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="app继续命令" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_device_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tv_mac"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <TextView
+                android:id="@+id/tv_receive_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tv_data_package"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lines="3" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

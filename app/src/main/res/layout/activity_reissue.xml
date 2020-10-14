@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".ReissueActivity">
+
+    <Button
+        android:id="@+id/tv_delete_all"
+        android:text="清除所有数据"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/tv_export_all"
+        android:text="导出所有数据"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/tv_read_rom"
+        android:text="读取物理地址数据"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ListView
+        android:id="@+id/lv_reissue"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+    </ListView>
+
+</LinearLayout>
