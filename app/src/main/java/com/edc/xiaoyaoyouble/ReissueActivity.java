@@ -193,7 +193,6 @@ public class ReissueActivity extends AppCompatActivity {
                     try {
                         countX = view.getFirstVisiblePosition();
                         countY = view.getChildAt(0).getTop();
-
                     } catch (Exception e) {
 
                     }

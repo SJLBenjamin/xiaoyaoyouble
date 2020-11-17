@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLv_reissue = (ListView) findViewById(R.id.lv_reissue);
         Button btIssue = (Button) findViewById(R.id.bt_issue_data);
         mMRedLine = (TextView) findViewById(R.id.tv_rea_line);
+        findViewById(R.id.tv_fzts).setOnClickListener(this);
 
 
         etBfCount = (EditText) findViewById(R.id.et_bf_count);
@@ -244,6 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.bt_connect).setOnClickListener(this);//连接
         findViewById(R.id.bt_unbind).setOnClickListener(this);//解绑
         findViewById(R.id.bt_qz_unbind).setOnClickListener(this);//强制解绑
+        findViewById(R.id.bt_change_led).setOnClickListener(this);//清除id
 
         Switch aSwitch = (Switch) findViewById(R.id.sw_auto_connect);
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -278,9 +280,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.bt_app_continue_cmd).setOnClickListener(this);
         findViewById(R.id.bt_app_device_status).setOnClickListener(this);//当前设备状态
         findViewById(R.id.bt_start_no_clear).setOnClickListener(this);//恢复不清0
-
+        findViewById(R.id.bt_zl_reissue).setOnClickListener(this);//增量补发
         mBtDeviceList = (Button) findViewById(R.id.bt_device_list);
-
+        findViewById(R.id.bt_news_data).setOnClickListener(this);//最新数据
         mBtDeviceList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -510,6 +512,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         mReissueAdapter.notifyDataSetChanged();
                                     }
                                 }
+                                if(receiveData[3]==0x13){
+                                    byte[] b3 = new byte[5];
+                                    System.arraycopy(receiveData, 4, b3, 0, 5);
+                                    // tvDataPackage.setText(receiveData[4]+"年"+receiveData[5]+"月"+receiveData[6]+"日"+receiveData[7]+"分");
+                                    //Toast.makeText(mContext, Arrays.toString(b3), Toast.LENGTH_SHORT).show();
+                                    int ad = (int) ((receiveData[9] & 0x00ff) + ((receiveData[10] << 8) & 0x0000ff00)) / 10;
+                                    //tvDataPackage.setText(Arrays.toString(b3)+"i="+(((receiveData[9]&0x00ff)+(((receiveData[10]<<8)&0x0000ff00))/10)+(((receiveData[9]&0x00ff)+((receiveData[10]<<8)&0x0000ff00))%10)*0.1));
+                                    String showSencondData = "时间为" + Arrays.toString(b3);
+                                    double dataL = (double) bytesToInt(receiveData[9], receiveData[10]) / 10;
+                                    showSencondData += "  i==" + dataL;
+                                    double batL = receiveData[12] + ((double) (receiveData[11] & 0x00ff)) / 256;
+                                    DecimalFormat df = new DecimalFormat("#.00");
+                                    showSencondData += "  bat==" + df.format(batL);
+                                    int cL = bytesToInt(receiveData[13], receiveData[14]);
+                                    showSencondData += "  序列号=" + cL;
+                                    tvDataPackage.setText(showSencondData);
+                                }
 
                                 if (receiveData[3] == 0x0a) {//此处用到的数据库是ReissueToRom数据库
                                     byte[] b3 = new byte[5];
@@ -574,9 +593,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             Toast.makeText(mContext, "时间序号不匹配", Toast.LENGTH_LONG).show();
                                             byte buFa[];
                                             if(!etBfCount.getText().toString().isEmpty()) {
-                                                buFa = new byte[]{7, receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0,0, (byte) (int) Integer.parseInt(etBfCount.getText().toString())};
+                                                buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0,0, (byte) (int) Integer.parseInt(etBfCount.getText().toString())};
                                             }else {
-                                                buFa = new byte[]{7, receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, 0};
+                                                buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, 0};
                                             }
                                             writeData(mDeviceMirror, buFa);
                                             break;
@@ -586,7 +605,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             mLv_reissue.setVisibility(View.GONE);
                                             break;
                                         case 0x12:
-                                            Toast.makeText(mContext, "数据请求错误", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(mContext, "增量请求错误", Toast.LENGTH_LONG).show();
                                             mMRedLine.setVisibility(View.GONE);
                                             mLv_reissue.setVisibility(View.GONE);
                                             break;
@@ -617,6 +636,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     });
                                 }
                                 if (receiveData[3] == 0x22) {//保持连接操作
+
+                                }
+                                if(receiveData[3]==0x14){//辅助调试
 
                                 }
                                 tvReceiveData.setText(bytesToHexString(receiveData, receiveData.length));
@@ -1155,7 +1177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                         //Toast.makeText(MainActivity.this, selectedDate.get(Calendar.YEAR) + "", Toast.LENGTH_SHORT).show();
-                        sendData16[0] = 7;
+
                         sendData16[1] = (byte) (int) Integer.valueOf(Integer.valueOf(selectedDate.get(Calendar.YEAR)).toString().substring(2));
                         sendData16[2] = (byte) (selectedDate.get(Calendar.MONTH) + 1);
                         sendData16[3] = (byte) selectedDate.get(Calendar.DAY_OF_MONTH);
@@ -1168,6 +1190,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pvTime.show();
                 break;
             case R.id.bt_reissue:
+                sendData16[0] = 7;
                 if(!etBfCount.getText().toString().isEmpty()){
                     sendData16[12] =(byte) (int) Integer.parseInt(etBfCount.getText().toString());
                 }
@@ -1389,6 +1412,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     byte[] bindData = {0x21, accountBytes[0], accountBytes[1], accountBytes[2], accountBytes[3], accountBytes[4], accountBytes[5], 1, 0, 0, 0, 0, 0};
                     writeData(mDeviceMirror, bindData);
                 }
+                break;
+            case R.id.bt_news_data:
+                byte[] newsData = {0x13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                writeData(mDeviceMirror, newsData);
+                break;
+            case R.id.tv_fzts:
+                byte[] fzts = {0x14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                writeData(mDeviceMirror, fzts);
+                break;
+            case R.id.bt_change_led:
+                //0x7E 0x12 0xAA 0x09 0x01 0x00 0x00 0x00 0x00 0x00 0xFF 0x00 0x00 0x00 0x00 0x00
+                byte[] changeLed = {0x09 ,0x01, 0x00, 0x00, 0x00, 0x00 ,0x00, (byte) 0xFF, 0x00 ,0x00, 0x00, 0x00, 0x00};
+                writeData(mDeviceMirror, changeLed);
                 break;
             default:
                 break;
