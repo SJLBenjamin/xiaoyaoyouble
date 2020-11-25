@@ -146,8 +146,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mEtRestartSendId;
     private EditText mEtAccount;
     private boolean isAutoConnect = true;//是否自动连接
-    private String deviceName="";//设备名称
+    private String deviceName = "";//设备名称
     private EditText etBfCount;//补发的东西
+    private EditText etWorkv;//工作电压
+    private EditText etWorkJzw;//设置校准项
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -283,6 +285,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.bt_zl_reissue).setOnClickListener(this);//增量补发
         mBtDeviceList = (Button) findViewById(R.id.bt_device_list);
         findViewById(R.id.bt_news_data).setOnClickListener(this);//最新数据
+
+
+        findViewById(R.id.bt_set_work_v).setOnClickListener(this);//设置工作电压
+        etWorkv = (EditText) findViewById(R.id.et_workv);
+
+        findViewById(R.id.bt_set_jzw).setOnClickListener(this);//设置校准项
+        etWorkJzw = (EditText) findViewById(R.id.et_work_jzw);
+
         mBtDeviceList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -376,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onClick(View v) {
-                deviceName ="";
+                deviceName = "";
                 mBtDeviceList.setEnabled(false);//设置设备列表按钮不可点击
                 btReconnect.setEnabled(false);//设置重新搜索按钮不可点击
                 //mBle.startScan(scanCallback);
@@ -405,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //开始搜索
-    public void startScan(){
+    public void startScan() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -445,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     return;
                                 }
                                 byte receiveData[] = data;
-                                if (receiveData[3]==0x0c) {
+                                if (receiveData[3] == 0x0c) {
                                     IsSendReadCMData = false;
                                     byte[] b = new byte[5];
                                     System.arraycopy(receiveData, 4, b, 0, 5);
@@ -453,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     System.arraycopy(receiveData, 9, b, 0, 5);
                                     tvBData.setText("b值" + Arrays.toString(b));
                                 }
-                                if (receiveData[3]==0x0d) {
+                                if (receiveData[3] == 0x0d) {
                                     IsVersionCMData = false;
                                     byte[] b2 = new byte[10];
                                     System.arraycopy(receiveData, 4, b2, 0, 10);
@@ -512,7 +522,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         mReissueAdapter.notifyDataSetChanged();
                                     }
                                 }
-                                if(receiveData[3]==0x13){
+                                if (receiveData[3] == 0x13) {
                                     byte[] b3 = new byte[5];
                                     System.arraycopy(receiveData, 4, b3, 0, 5);
                                     // tvDataPackage.setText(receiveData[4]+"年"+receiveData[5]+"月"+receiveData[6]+"日"+receiveData[7]+"分");
@@ -568,7 +578,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        mReissueAdapter.notifyDataSetChanged();
 //                    }
                                 }
-                                if (receiveData[3] == 0x07||receiveData[3] == 0x17) {//表示当前为补发指令
+                                if (receiveData[3] == 0x07 || receiveData[3] == 0x17) {//表示当前为补发指令
                                     switch (receiveData[15]) {
                                         case 0://数据匹配
                                             mLv_reissue.setVisibility(View.VISIBLE);
@@ -592,9 +602,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         case 3:
                                             Toast.makeText(mContext, "时间序号不匹配", Toast.LENGTH_LONG).show();
                                             byte buFa[];
-                                            if(!etBfCount.getText().toString().isEmpty()) {
-                                                buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0,0, (byte) (int) Integer.parseInt(etBfCount.getText().toString())};
-                                            }else {
+                                            if (!etBfCount.getText().toString().isEmpty()) {
+                                                buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, (byte) (int) Integer.parseInt(etBfCount.getText().toString())};
+                                            } else {
                                                 buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, 0};
                                             }
                                             writeData(mDeviceMirror, buFa);
@@ -614,11 +624,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     }
                                 }
                                 if (receiveData[3] == 0x20) {//app绑定操作
-                                    if(receiveData[10]!=1){
+                                    if (receiveData[10] != 1) {
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(MainActivity.this,"绑定成功",Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(MainActivity.this, "绑定成功", Toast.LENGTH_SHORT).show();
                                             }
                                         });
                                     }
@@ -631,14 +641,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(MainActivity.this,"解绑成功",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(MainActivity.this, "解绑成功", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                                 }
                                 if (receiveData[3] == 0x22) {//保持连接操作
 
                                 }
-                                if(receiveData[3]==0x14){//辅助调试
+                                if (receiveData[3] == 0x14) {//辅助调试
 
                                 }
                                 tvReceiveData.setText(bytesToHexString(receiveData, receiveData.length));
@@ -1191,8 +1201,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.bt_reissue:
                 sendData16[0] = 7;
-                if(!etBfCount.getText().toString().isEmpty()){
-                    sendData16[12] =(byte) (int) Integer.parseInt(etBfCount.getText().toString());
+                if (!etBfCount.getText().toString().isEmpty()) {
+                    sendData16[12] = (byte) (int) Integer.parseInt(etBfCount.getText().toString());
                 }
                 if (!mMEtSerial.getText().toString().isEmpty()) {
                     sendData16[6] = (byte) (int) Integer.parseInt(mMEtSerial.getText().toString());
@@ -1208,8 +1218,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.bt_zl_reissue:
                 sendData16[0] = 0x17;
-                if(!etBfCount.getText().toString().isEmpty()){
-                    sendData16[12] =(byte) (int) Integer.parseInt(etBfCount.getText().toString());
+                if (!etBfCount.getText().toString().isEmpty()) {
+                    sendData16[12] = (byte) (int) Integer.parseInt(etBfCount.getText().toString());
                 }
                 if (!mMEtSerial.getText().toString().isEmpty()) {
                     sendData16[6] = (byte) (int) Integer.parseInt(mMEtSerial.getText().toString());
@@ -1423,9 +1433,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.bt_change_led:
                 //0x7E 0x12 0xAA 0x09 0x01 0x00 0x00 0x00 0x00 0x00 0xFF 0x00 0x00 0x00 0x00 0x00
-                byte[] changeLed = {0x09 ,0x01, 0x00, 0x00, 0x00, 0x00 ,0x00, (byte) 0xFF, 0x00 ,0x00, 0x00, 0x00, 0x00};
+                byte[] changeLed = {0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};
                 writeData(mDeviceMirror, changeLed);
                 break;
+            case R.id.bt_set_work_v://设置工作电压
+                //0x7E 0x12 0xAA 0x31 工作电压2字节 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 累加和1字节 0x7E
+                String workV = etWorkv.getText().toString().trim();
+                if (workV.isEmpty()) {
+                    Toast.makeText(mContext, "未输入电压", Toast.LENGTH_SHORT).show();
+                    break;
+                } else {
+                    byte[] changeWorkV = {0x31, 0, 0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                    //byte[] changeWorkV = {0x31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                    changeWorkV[1] = (byte) Integer.parseInt(workV);
+                    changeWorkV[2] = (byte) (Integer.parseInt(workV) >> 8);
+                    writeData(mDeviceMirror, changeWorkV);
+                }
+                break;
+            case R.id.bt_set_jzw://设置校准值
+                //0x7E 0x12 0xAA 0x31 工作电压2字节 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 累加和1字节 0x7E
+                String workJzw = etWorkJzw.getText().toString().trim();
+                if (workJzw.isEmpty()) {
+                    Toast.makeText(mContext, "未输入校验值", Toast.LENGTH_SHORT).show();
+                    break;
+                } else {
+                    byte[] changeWorkJzw = {0x30, 0, 0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                    //byte[] changeWorkV = {0x31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                    changeWorkJzw[1] = (byte) Integer.parseInt(workJzw);
+                    changeWorkJzw[2] = (byte) (Integer.parseInt(workJzw) >> 8);
+                    writeData(mDeviceMirror, changeWorkJzw);
+                }
+                break;
+
             default:
                 break;
         }
@@ -1457,7 +1496,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
         //initView();
     }
-
 
 
     @Override
@@ -1524,8 +1562,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Log.d(TAG, "onDeviceFound");
             if (bluetoothLeDevice.getName() != null && bluetoothLeDevice.getName().contains("Endoc")) {
                 if (!data_list.contains(bluetoothLeDevice.getName())) {//如果搜索到没有存在设备列表的数据,那么直接添加
-                    if(bluetoothLeDevice.getName().equals(deviceName)){
-                        ViseBle.getInstance().connect(bluetoothLeDevice,xiaoConCallback);
+                    if (bluetoothLeDevice.getName().equals(deviceName)) {
+                        ViseBle.getInstance().connect(bluetoothLeDevice, xiaoConCallback);
                     }
                     data_list.add(bluetoothLeDevice.getName());
                     //device_list.add(device);

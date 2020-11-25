@@ -64,10 +64,10 @@
                     android:text="设备列表" />
 
                 <Switch
-                    android:checked="true"
                     android:id="@+id/sw_auto_connect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="自动连接" />
             </LinearLayout>
 
@@ -90,6 +90,7 @@
 
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -106,10 +107,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="清除id" />
+
                 <TextView
                     android:id="@+id/tv_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
                 <Button
                     android:id="@+id/bt_change_led"
                     android:layout_width="wrap_content"
@@ -117,28 +120,28 @@
                     android:text="led切换" />
 
             </LinearLayout>
-   <!--         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <!--         <LinearLayout
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content">
 
-                <Button
-                    android:id="@+id/bt_output_hight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="输出-0.9V" />
+                         <Button
+                             android:id="@+id/bt_output_hight"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="输出-0.9V" />
 
-                <Button
-                    android:id="@+id/bt_output_low"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="输出-0.5V" />
+                         <Button
+                             android:id="@+id/bt_output_low"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="输出-0.5V" />
 
 
-                <TextView
-                    android:id="@+id/tv_number"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>-->
+                         <TextView
+                             android:id="@+id/tv_number"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content" />
+                     </LinearLayout>-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -192,11 +195,13 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
                 <Button
-                    android:text="辅助调试"
                     android:id="@+id/tv_fzts"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="辅助调试" />
+
                 <Button
                     android:id="@+id/bt_version"
                     android:layout_width="wrap_content"
@@ -275,6 +280,47 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/bt_set_work_v"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设置工作电压" />
+
+                <EditText
+                    android:id="@+id/et_workv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="此处输入电压"
+                    android:inputType="number" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="mv" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_set_jzw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设置校准项" />
+                <EditText
+                    android:inputType="number"
+                    android:id="@+id/et_work_jzw"
+                    android:hint="此处输入值"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
                     android:id="@+id/bt_reissue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -298,6 +344,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="phone" />
+
                 <TextView
 
                     android:layout_width="wrap_content"
@@ -309,6 +356,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="phone" />
+
                 <Button
                     android:id="@+id/bt_close"
                     android:layout_width="wrap_content"
@@ -329,7 +377,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="增量补发" />
-
 
 
             </LinearLayout>
@@ -413,6 +460,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:text="读指定内存" />
+
                 <Button
                     android:id="@+id/bt_news_data"
                     android:layout_width="wrap_content"
@@ -420,22 +468,23 @@
                     android:layout_marginLeft="15dp"
                     android:text="最新数据" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <Button
                     android:id="@+id/bt_app_device_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="设备当前状态" />
+
                 <Button
                     android:id="@+id/bt_device_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="获取设备时间" />
             </LinearLayout>
-
-
 
 
             <LinearLayout
@@ -495,12 +544,12 @@
                     android:text="所有数据页面" />
 
 
-
                 <Button
                     android:id="@+id/bt_for_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="循环启动" />
+
                 <Button
                     android:id="@+id/bt_start_no_clear"
                     android:layout_width="wrap_content"
