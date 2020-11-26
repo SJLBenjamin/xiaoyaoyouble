@@ -291,7 +291,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         etWorkv = (EditText) findViewById(R.id.et_workv);
 
         findViewById(R.id.bt_set_jzw).setOnClickListener(this);//设置校准项
-        etWorkJzw = (EditText) findViewById(R.id.et_work_jzw);
+        etWorkJzw = (EditText) findViewById(R.id.et_work_jzw);//输入的校准值
+        findViewById(R.id.bt_read_jiaoyan_data).setOnClickListener(this);//读取校准数据
 
         mBtDeviceList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -477,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 if (receiveData[3] != 0x00) {//如果收到的不是数据包指令,那么就将收发指令设置为false
                                     isIssue = false;
                                 }
-                                if (receiveData[3] == 0x00) {
+                                if (receiveData[3] == 0x00) {//0X34是读取校验值的包
                                     byte[] b3 = new byte[5];
                                     System.arraycopy(receiveData, 4, b3, 0, 5);
                                     // tvDataPackage.setText(receiveData[4]+"年"+receiveData[5]+"月"+receiveData[6]+"日"+receiveData[7]+"分");
@@ -578,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        mReissueAdapter.notifyDataSetChanged();
 //                    }
                                 }
-                                if (receiveData[3] == 0x07 || receiveData[3] == 0x17) {//表示当前为补发指令
+                                if (receiveData[3] == 0x07 || receiveData[3] == 0x17 ||receiveData[3]==0x34) {//表示当前为补发指令
                                     switch (receiveData[15]) {
                                         case 0://数据匹配
                                             mLv_reissue.setVisibility(View.VISIBLE);
@@ -623,6 +624,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             break;
                                     }
                                 }
+                              /*  if(receiveData[3]==0x34 ){//读取校验值
+                                    mLv_reissue.setVisibility(View.VISIBLE);
+                                    mMRedLine.setVisibility(View.VISIBLE);
+                                    reissueList.clear();
+                                    mReissueAdapter.notifyDataSetChanged();
+                                    Log.d(TAG, bytesToHexString(receiveData, receiveData.length));
+                                    reissueList.add(new Reissue("0", 0, bytesToHexString(receiveData, receiveData.length), bytesToHexString(receiveData, receiveData.length)));
+                                    isIssue = true;
+                                }*/
                                 if (receiveData[3] == 0x20) {//app绑定操作
                                     if (receiveData[10] != 1) {
                                         runOnUiThread(new Runnable() {
@@ -1463,6 +1473,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     changeWorkJzw[2] = (byte) (Integer.parseInt(workJzw) >> 8);
                     writeData(mDeviceMirror, changeWorkJzw);
                 }
+                break;
+
+            case R.id.bt_read_jiaoyan_data:
+                byte[] jzData = {0x34, 0, 0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                //byte[] changeWorkV = {0x31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                writeData(mDeviceMirror, jzData);
                 break;
 
             default:
