@@ -293,6 +293,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.bt_set_jzw).setOnClickListener(this);//设置校准项
         etWorkJzw = (EditText) findViewById(R.id.et_work_jzw);//输入的校准值
         findViewById(R.id.bt_read_jiaoyan_data).setOnClickListener(this);//读取校准数据
+        findViewById(R.id.bt_default_data).setOnClickListener(this);//使用默认参数
+        findViewById(R.id.bt_qc_jzx).setOnClickListener(this);//清除校准项
 
         mBtDeviceList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1480,7 +1482,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //byte[] changeWorkV = {0x31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
                 writeData(mDeviceMirror, jzData);
                 break;
-
+            case R.id.bt_default_data://使用默认参数
+                byte[] defaultData = {9, 1, 0, 0x00, 0x00, 2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                //byte[] changeWorkV = {0x31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                writeData(mDeviceMirror, defaultData);
+                break;
+            case R.id.bt_qc_jzx://清除校准项
+                byte[] clearJZX = {9, 1, 0, 0x00, 0x00, 3, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                //byte[] changeWorkV = {0x31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                writeData(mDeviceMirror, clearJZX);
+                break;
             default:
                 break;
         }
