@@ -477,30 +477,85 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     tvVersion.setText("版本号" + versionString);
                                 }
 
-                                if (receiveData[3] != 0x00) {//如果收到的不是数据包指令,那么就将收发指令设置为false
+                                if (receiveData[3] != 0x00&&receiveData[3] !=0x17) {//如果收到的不是数据包指令,那么就将收发指令设置为false
+                                    Log.d(TAG,"receiveData[3] != 0x00&&receiveData[3] !=0x17");
                                     isIssue = false;
                                 }
-                                if (receiveData[3] == 0x00) {//0X34是读取校验值的包
-                                    byte[] b3 = new byte[5];
-                                    System.arraycopy(receiveData, 4, b3, 0, 5);
-                                    // tvDataPackage.setText(receiveData[4]+"年"+receiveData[5]+"月"+receiveData[6]+"日"+receiveData[7]+"分");
-                                    Toast.makeText(mContext, Arrays.toString(b3), Toast.LENGTH_SHORT).show();
-                                    int ad = (int) ((receiveData[9] & 0x00ff) + ((receiveData[10] << 8) & 0x0000ff00)) / 10;
-                                    //tvDataPackage.setText(Arrays.toString(b3)+"i="+(((receiveData[9]&0x00ff)+(((receiveData[10]<<8)&0x0000ff00))/10)+(((receiveData[9]&0x00ff)+((receiveData[10]<<8)&0x0000ff00))%10)*0.1));
-                                    String showSencondData = "时间" + Arrays.toString(b3);
-                                    double dataL = (double) bytesToInt(receiveData[9], receiveData[10]) / 10;
-                                    showSencondData += " i=" + dataL;
-                                    double batL = receiveData[12] + ((double) (receiveData[11] & 0x00ff)) / 256;
-                                    DecimalFormat df = new DecimalFormat("#.00");
-                                    showSencondData += " bat=" + df.format(batL);
-                                    int cL = bytesToInt(receiveData[13], receiveData[14]);
-                                    showSencondData += " 序列=" + cL;
-                                    tvDataPackage.setText(showSencondData);
-                                    new Reissue(mDeviceMirror.getBluetoothLeDevice().getName(), bytesToInt(receiveData[13], receiveData[14]), showSencondData, bytesToHexString(receiveData, receiveData.length)).save();
-                                    if (isIssue) {
-                                        reissueList.add(new Reissue("0", 0, showSencondData, bytesToHexString(receiveData, receiveData.length)));
-                                        mReissueAdapter.notifyDataSetChanged();
+
+                                if (receiveData[3] == 0x07 || receiveData[3] == 0x17 ||receiveData[3]==0x34) {//表示当前为补发指令
+                                    switch (receiveData[15]) {
+                                        case 0://数据匹配
+                                            Log.d(TAG,"receiveData[3] == 0x07 || receiveData[3] == 0x17 ||receiveData[3]==0x34");
+                                            Log.d(TAG,"receiveData[3] =="+receiveData[3]);
+                                            mLv_reissue.setVisibility(View.VISIBLE);
+                                            mMRedLine.setVisibility(View.VISIBLE);
+                                            if(receiveData[3] != 0x17){
+                                                reissueList.clear();
+                                                mReissueAdapter.notifyDataSetChanged();
+                                                Log.d(TAG, bytesToHexString(receiveData, receiveData.length));
+                                                reissueList.add(new Reissue("0", 0, bytesToHexString(receiveData, receiveData.length), bytesToHexString(receiveData, receiveData.length)));
+                                            }
+                                            isIssue = true;
+                                            break;
+                                        case 1://数据不存在
+                                            Toast.makeText(mContext, "要求补发的序号不存在", Toast.LENGTH_LONG).show();
+                                            mMRedLine.setVisibility(View.GONE);
+                                            mLv_reissue.setVisibility(View.GONE);
+                                            break;
+                                        case 2:
+                                            Toast.makeText(mContext, "CGM错误", Toast.LENGTH_LONG).show();
+                                            mMRedLine.setVisibility(View.GONE);
+                                            mLv_reissue.setVisibility(View.GONE);
+                                            break;
+                                        case 3:
+                                            Toast.makeText(mContext, "时间序号不匹配", Toast.LENGTH_LONG).show();
+                                            byte buFa[];
+                                            if (!etBfCount.getText().toString().isEmpty()) {
+                                                buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, (byte) (int) Integer.parseInt(etBfCount.getText().toString())};
+                                            } else {
+                                                buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, 0};
+                                            }
+                                            writeData(mDeviceMirror, buFa);
+                                            break;
+                                        case 0x13:
+                                            Toast.makeText(mContext, "数据包不足", Toast.LENGTH_LONG).show();
+                                            mMRedLine.setVisibility(View.GONE);
+                                            mLv_reissue.setVisibility(View.GONE);
+                                            break;
+                                        case 0x12:
+                                            Toast.makeText(mContext, "增量请求错误", Toast.LENGTH_LONG).show();
+                                            mMRedLine.setVisibility(View.GONE);
+                                            mLv_reissue.setVisibility(View.GONE);
+                                            break;
+                                        default:
+                                            break;
                                     }
+                                }
+                                if (receiveData[3] == 0x00||receiveData[3] ==0x17) {//0X34是读取校验值的包
+                                    if (receiveData[15]==0) {//因为0x17的原因,所以需要判断此处数据是否正确,不正确就不用了
+                                        Log.d(TAG,"receiveData[3] == 0x00||receiveData[3] ==0x17");
+                                        byte[] b3 = new byte[5];
+                                        System.arraycopy(receiveData, 4, b3, 0, 5);
+                                        // tvDataPackage.setText(receiveData[4]+"年"+receiveData[5]+"月"+receiveData[6]+"日"+receiveData[7]+"分");
+                                        Toast.makeText(mContext, Arrays.toString(b3), Toast.LENGTH_SHORT).show();
+                                        int ad = (int) ((receiveData[9] & 0x00ff) + ((receiveData[10] << 8) & 0x0000ff00)) / 10;
+                                        //tvDataPackage.setText(Arrays.toString(b3)+"i="+(((receiveData[9]&0x00ff)+(((receiveData[10]<<8)&0x0000ff00))/10)+(((receiveData[9]&0x00ff)+((receiveData[10]<<8)&0x0000ff00))%10)*0.1));
+                                        String showSencondData = "时间" + Arrays.toString(b3);
+                                        double dataL = (double) bytesToInt(receiveData[9], receiveData[10]) / 10;
+                                        showSencondData += " i=" + dataL;
+                                        double batL = receiveData[12] + ((double) (receiveData[11] & 0x00ff)) / 256;
+                                        DecimalFormat df = new DecimalFormat("#.00");
+                                        showSencondData += " bat=" + df.format(batL);
+                                        int cL = bytesToInt(receiveData[13], receiveData[14]);
+                                        showSencondData += " 序列=" + cL;
+                                        tvDataPackage.setText(showSencondData);
+                                        new Reissue(mDeviceMirror.getBluetoothLeDevice().getName(), bytesToInt(receiveData[13], receiveData[14]), showSencondData, bytesToHexString(receiveData, receiveData.length)).save();
+                                        if (isIssue) {
+                                            reissueList.add(new Reissue("0", 0, showSencondData, bytesToHexString(receiveData, receiveData.length)));
+                                            mReissueAdapter.notifyDataSetChanged();
+                                        }
+                                    }
+
                                 }
 
                                 if (receiveData[3] == 0x06) {
@@ -574,58 +629,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         number2 = 0;
                                     }
 
-
 //                    new Reissue(mDeviceMirror.getBleName(), bytesToInt(receiveData[13], receiveData[14]), showSencondData, bytesToHexString(receiveData, receiveData.length)).save();
 //                    if (isIssue) {
 //                        reissueList.add(new Reissue("0", 0, showSencondData, bytesToHexString(receiveData, receiveData.length)));
 //                        mReissueAdapter.notifyDataSetChanged();
 //                    }
                                 }
-                                if (receiveData[3] == 0x07 || receiveData[3] == 0x17 ||receiveData[3]==0x34) {//表示当前为补发指令
-                                    switch (receiveData[15]) {
-                                        case 0://数据匹配
-                                            mLv_reissue.setVisibility(View.VISIBLE);
-                                            mMRedLine.setVisibility(View.VISIBLE);
-                                            reissueList.clear();
-                                            mReissueAdapter.notifyDataSetChanged();
-                                            Log.d(TAG, bytesToHexString(receiveData, receiveData.length));
-                                            reissueList.add(new Reissue("0", 0, bytesToHexString(receiveData, receiveData.length), bytesToHexString(receiveData, receiveData.length)));
-                                            isIssue = true;
-                                            break;
-                                        case 1://数据不存在
-                                            Toast.makeText(mContext, "要求补发的序号不存在", Toast.LENGTH_LONG).show();
-                                            mMRedLine.setVisibility(View.GONE);
-                                            mLv_reissue.setVisibility(View.GONE);
-                                            break;
-                                        case 2:
-                                            Toast.makeText(mContext, "CGM错误", Toast.LENGTH_LONG).show();
-                                            mMRedLine.setVisibility(View.GONE);
-                                            mLv_reissue.setVisibility(View.GONE);
-                                            break;
-                                        case 3:
-                                            Toast.makeText(mContext, "时间序号不匹配", Toast.LENGTH_LONG).show();
-                                            byte buFa[];
-                                            if (!etBfCount.getText().toString().isEmpty()) {
-                                                buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, (byte) (int) Integer.parseInt(etBfCount.getText().toString())};
-                                            } else {
-                                                buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, 0};
-                                            }
-                                            writeData(mDeviceMirror, buFa);
-                                            break;
-                                        case 0x13:
-                                            Toast.makeText(mContext, "数据包不足", Toast.LENGTH_LONG).show();
-                                            mMRedLine.setVisibility(View.GONE);
-                                            mLv_reissue.setVisibility(View.GONE);
-                                            break;
-                                        case 0x12:
-                                            Toast.makeText(mContext, "增量请求错误", Toast.LENGTH_LONG).show();
-                                            mMRedLine.setVisibility(View.GONE);
-                                            mLv_reissue.setVisibility(View.GONE);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
+
                               /*  if(receiveData[3]==0x34 ){//读取校验值
                                     mLv_reissue.setVisibility(View.VISIBLE);
                                     mMRedLine.setVisibility(View.VISIBLE);
