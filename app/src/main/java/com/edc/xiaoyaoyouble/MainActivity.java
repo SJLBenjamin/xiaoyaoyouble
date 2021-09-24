@@ -150,7 +150,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText etBfCount;//补发的东西
     private EditText etWorkv;//工作电压
     private EditText etWorkJzw;//设置校准项
-
+    private TextView tvIdName;//烧录的id名字
+    private TextView tvTimeCode;//时间编码
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -249,6 +250,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.bt_qz_unbind).setOnClickListener(this);//强制解绑
         findViewById(R.id.bt_change_led).setOnClickListener(this);//清除id
 
+
+
+        tvIdName = (TextView) findViewById(R.id.tv_id_name);//烧录id的名字
+        findViewById(R.id.bt_id_select).setOnClickListener(this);//选择id
+        findViewById(R.id.bt_confirm_id).setOnClickListener(this);//确认发送
+
         Switch aSwitch = (Switch) findViewById(R.id.sw_auto_connect);
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -295,6 +302,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.bt_read_jiaoyan_data).setOnClickListener(this);//读取校准数据
         findViewById(R.id.bt_default_data).setOnClickListener(this);//使用默认参数
         findViewById(R.id.bt_qc_jzx).setOnClickListener(this);//清除校准项
+
+
+
+       findViewById(R.id.bt_code_timer_select).setOnClickListener(this);
+        tvTimeCode = (TextView) findViewById(R.id.tv_time_code);
 
         mBtDeviceList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -478,15 +490,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
 
                                 if (receiveData[3] != 0x00&&receiveData[3] !=0x17) {//如果收到的不是数据包指令,那么就将收发指令设置为false
-                                    Log.d(TAG,"receiveData[3] != 0x00&&receiveData[3] !=0x17");
                                     isIssue = false;
                                 }
 
                                 if (receiveData[3] == 0x07 || receiveData[3] == 0x17 ||receiveData[3]==0x34) {//表示当前为补发指令
                                     switch (receiveData[15]) {
                                         case 0://数据匹配
-                                            Log.d(TAG,"receiveData[3] == 0x07 || receiveData[3] == 0x17 ||receiveData[3]==0x34");
-                                            Log.d(TAG,"receiveData[3] =="+receiveData[3]);
                                             mLv_reissue.setVisibility(View.VISIBLE);
                                             mMRedLine.setVisibility(View.VISIBLE);
                                             if(receiveData[3] != 0x17){
@@ -497,6 +506,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             }
                                             isIssue = true;
                                             break;
+                                /*        case 0x0a:
+                                            mLv_reissue.setVisibility(View.VISIBLE);
+                                            mMRedLine.setVisibility(View.VISIBLE);
+                                            if(receiveData[3] != 0x17){
+                                                reissueList.clear();
+                                                mReissueAdapter.notifyDataSetChanged();
+                                                Log.d(TAG, bytesToHexString(receiveData, receiveData.length));
+                                                reissueList.add(new Reissue("0", 0, bytesToHexString(receiveData, receiveData.length), bytesToHexString(receiveData, receiveData.length)));
+                                            }
+                                            isIssue = true;
+                                            break;*/
                                         case 1://数据不存在
                                             Toast.makeText(mContext, "要求补发的序号不存在", Toast.LENGTH_LONG).show();
                                             mMRedLine.setVisibility(View.GONE);
@@ -516,6 +536,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                 buFa = new byte[]{receiveData[3], receiveData[4], receiveData[5], receiveData[6], receiveData[7], receiveData[8], receiveData[13], receiveData[14], 0, 0, 0, 0, 0};
                                             }
                                             writeData(mDeviceMirror, buFa);
+                                            String a="1234!";
                                             break;
                                         case 0x13:
                                             Toast.makeText(mContext, "数据包不足", Toast.LENGTH_LONG).show();
@@ -532,8 +553,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     }
                                 }
                                 if (receiveData[3] == 0x00||receiveData[3] ==0x17) {//0X34是读取校验值的包
-                                    if (receiveData[15]==0) {//因为0x17的原因,所以需要判断此处数据是否正确,不正确就不用了
-                                        Log.d(TAG,"receiveData[3] == 0x00||receiveData[3] ==0x17");
+                                    if (receiveData[15]==0||receiveData[15]==0x0a) {//因为0x17的原因,所以需要判断此处数据是否正确,不正确就不用了,加入0x0a判断
                                         byte[] b3 = new byte[5];
                                         System.arraycopy(receiveData, 4, b3, 0, 5);
                                         // tvDataPackage.setText(receiveData[4]+"年"+receiveData[5]+"月"+receiveData[6]+"日"+receiveData[7]+"分");
@@ -555,7 +575,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             mReissueAdapter.notifyDataSetChanged();
                                         }
                                     }
-
                                 }
 
                                 if (receiveData[3] == 0x06) {
@@ -687,7 +706,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(BleException exception) {
-                Log.d(TAG, "readOnFailure");
+                Log.d(TAG, "readOnFailure"+exception.getDescription());
             }
         }, bluetoothGattChanne2);
         deviceMirror.registerNotify(false);
@@ -1502,11 +1521,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //byte[] changeWorkV = {0x31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
                 writeData(mDeviceMirror, clearJZX);
                 break;
+            case R.id.bt_confirm_id://确认发送
+                writeData(mDeviceMirror,writeId);
+                break;
+            case R.id.bt_id_select://选择id
+                final ArrayList<Character> objects = new ArrayList<>();
+                for (int i=49;i<=57;i++) {
+                    objects.add((char) i);
+                }
+
+                OptionsPickerView pvOptions = new OptionsPickerBuilder(MainActivity.this, new OnOptionsSelectListener() {
+                    @Override
+                    public void onOptionsSelect(int options1, int option2, int options3 ,View v) {
+                        //返回的分别是三个级别的选中位置
+                        writeId[4]=(byte) (char)objects.get(options1);
+                        writeId[5]=(byte) (char)objects.get(option2);
+                        writeId[6]=(byte) (char)objects.get(options3);
+                        tvIdName.setText("编码:"+(char)writeId[4]+""+(char)writeId[5]+""+(char)writeId[6]);
+                    }
+                }).build();
+                pvOptions.setNPicker(objects, objects, objects);
+                pvOptions.show();
+                break;
+            case R.id.bt_code_timer_select:
+                final ArrayList<Character> yearCharacters = new ArrayList<>();//年
+                for (int i=49;i<=57;i++) {
+                    yearCharacters.add((char) i);
+                }
+                for (int i=65;i<=90;i++) {
+                    yearCharacters.add((char) i);
+                }
+                final ArrayList<Character> mouthCharacters = new ArrayList<>();//月
+                for (int i=49;i<=57;i++) {
+                    mouthCharacters.add((char) i);
+                }
+                mouthCharacters.add('A');
+                mouthCharacters.add('B');
+                mouthCharacters.add('C');
+
+                final ArrayList<Character> dayCharacters = new ArrayList<>();//日
+                for (int i=49;i<=57;i++) {
+                    dayCharacters.add((char) i);
+                }
+                for (int i = 65; i <= 86; i++) {
+                    dayCharacters.add((char) i);
+                }
+
+                Log.d(TAG, bytesToHexString(writeId, writeId.length));
+                new TimePickerBuilder(MainActivity.this, new OnTimeSelectListener() {
+                    @Override
+                    public void onTimeSelect(Date date, View v) {
+                        Calendar instance = Calendar.getInstance();
+                        instance.setTime(date);
+                        int year = instance.get(Calendar.YEAR);
+                        int mount = instance.get(Calendar.MONTH);
+                        int day = instance.get(Calendar.DAY_OF_MONTH);
+                        int yearCount =year-2021;//求出年的位置,即下标
+                        int mountCount =mount;//求出月的位置,即下标
+                        int dayCount  =day-1;//求出日的位置,即下标
+                        //0f,1,9,?,1,1,1
+                        //0f,31,39,4f,31,31,31,00,00,00,00,00,00,
+                        writeId[0] =0x0f;
+                        writeId[1]=(byte) (char)yearCharacters.get(yearCount);
+                        writeId[2]=(byte) (char)mouthCharacters.get(mountCount);
+                        writeId[3]=(byte) (char)dayCharacters.get(dayCount);
+                        tvTimeCode.setText("时间:"+(char)writeId[1]+""+(char) writeId[2]+""+(char) writeId[3]);
+
+                    }
+                }).setType(new boolean[]{true, true, true, false, false, false}).build().show();// 默认全部显示.build();
+
+                break;
             default:
                 break;
         }
     }
 
+    public byte[] writeId=new byte[13];//写ID
     boolean isSinger = false;//是否读单条
 
     public byte[] sendData16 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -1597,7 +1687,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onDeviceFound(BluetoothLeDevice bluetoothLeDevice) {
 
             //Log.d(TAG, "onDeviceFound");
-            if (bluetoothLeDevice.getName() != null && bluetoothLeDevice.getName().contains("Endoc")) {
+            if (bluetoothLeDevice.getName() != null && (bluetoothLeDevice.getName().contains("Endoc")||bluetoothLeDevice.getName().contains("EDC"))) {
                 if (!data_list.contains(bluetoothLeDevice.getName())) {//如果搜索到没有存在设备列表的数据,那么直接添加
                     if (bluetoothLeDevice.getName().equals(deviceName)) {
                         ViseBle.getInstance().connect(bluetoothLeDevice, xiaoConCallback);
