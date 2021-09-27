@@ -1526,7 +1526,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.bt_id_select://选择id
                 final ArrayList<Character> objects = new ArrayList<>();
-                for (int i=49;i<=57;i++) {
+                for (int i=48;i<=57;i++) {
                     objects.add((char) i);
                 }
 
@@ -1566,7 +1566,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 for (int i = 65; i <= 86; i++) {
                     dayCharacters.add((char) i);
                 }
-
+                Calendar instance = Calendar.getInstance();
+                instance.set(Calendar.YEAR,2021);
+                instance.set(Calendar.MONTH,0);
+                instance.set(Calendar.DAY_OF_MONTH,1);
                 Log.d(TAG, bytesToHexString(writeId, writeId.length));
                 new TimePickerBuilder(MainActivity.this, new OnTimeSelectListener() {
                     @Override
@@ -1588,7 +1591,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         tvTimeCode.setText("时间:"+(char)writeId[1]+""+(char) writeId[2]+""+(char) writeId[3]);
 
                     }
-                }).setType(new boolean[]{true, true, true, false, false, false}).build().show();// 默认全部显示.build();
+                }).setRangDate(instance,null).setType(new boolean[]{true, true, true, false, false, false}).build().show();// 默认全部显示.build();
 
                 break;
             default:

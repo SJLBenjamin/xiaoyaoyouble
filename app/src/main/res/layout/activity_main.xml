@@ -447,7 +447,7 @@
                 android:layout_height="wrap_content"/>
             <Button
                 android:id="@+id/bt_id_select"
-                android:text="编码选择"
+                android:text="编号选择"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
@@ -456,7 +456,7 @@
                 android:layout_height="wrap_content"/>
             <Button
                 android:id="@+id/bt_confirm_id"
-                android:text="确认烧录id"
+                android:text="写入ID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
