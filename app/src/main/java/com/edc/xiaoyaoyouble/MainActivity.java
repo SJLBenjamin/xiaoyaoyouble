@@ -89,7 +89,7 @@ import static org.litepal.LitePalApplication.getContext;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Context mContext = this;
-
+   int  options=0;//id选择位置
     DeviceMirror mDeviceMirror;
     String TAG = "MainActivity1";
     boolean IsSendReadCMData = false;//是否发生了读的数据
@@ -152,6 +152,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText etWorkJzw;//设置校准项
     private TextView tvIdName;//烧录的id名字
     private TextView tvTimeCode;//时间编码
+    private TextView tvLpTime;//乐普时间
+    private TextView tvLpLsh;//乐普流水号
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,6 +212,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.tv_fzts).setOnClickListener(this);
 
 
+       findViewById(R.id.bt_set_lp_time).setOnClickListener(this);
+       findViewById(R.id.bt_set_lp_id).setOnClickListener(this);
+       findViewById(R.id.bt_set_lp_id_comfirm).setOnClickListener(this);
+
+
         etBfCount = (EditText) findViewById(R.id.et_bf_count);
 
         findViewById(R.id.bt_set_id).setOnClickListener(this);//设置id按钮
@@ -241,6 +248,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         mTvNumber = (TextView) findViewById(R.id.tv_number);//物理内存地址
+
+
+        tvLpTime = (TextView) findViewById(R.id.tv_lp_time);
+        tvLpLsh = (TextView) findViewById(R.id.tv_lp_lsh);
 
 
         findViewById(R.id.bt_bind).setOnClickListener(this);//绑定
@@ -589,7 +600,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     showSencondData += "  i==" + dataL;
                                     double batL = receiveData[12] + ((double) (receiveData[11] & 0x00ff)) / 256;
                                     DecimalFormat df = new DecimalFormat("#.00");
-                                    showSencondData += "  bat==" + df.format(batL);
                                     int cL = bytesToInt(receiveData[13], receiveData[14]);
                                     showSencondData += "  序列号=" + cL;
                                     tvDataPackage.setText(showSencondData);
@@ -1355,6 +1365,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 };
                 new Timer().schedule(endTask, 1000 * 60 * 11 + 1000 * 30, 1000 * 60 * 11 + 1000 * 30);
                 break;
+            case R.id.bt_set_lp_id:
+                final List objects1 = new ArrayList<String>();
+                for(int i=0;i<=99;i++){
+                    objects1.add(i+"");
+                }
+                List objects2 = new ArrayList<String>();
+                for(int i=0;i<=9;i++){
+                    objects2.add(i+"");
+                }
+                OptionsPickerView<Object> build = new OptionsPickerBuilder(MainActivity.this, new OnOptionsSelectListener() {
+                    @Override
+                    public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                        options =options1;
+                        String a=(String)objects1.get(options1);
+                        if(options1<10){
+                            setIdSendData[6]='0';
+                        }else {
+                            setIdSendData[6]= (byte) a.charAt(1);
+                        }
+                        setIdSendData[5]= (byte) a.charAt(0);
+                        setIdSendData[7]= (byte) ((String) objects1.get(options2)).charAt(0);
+                        setIdSendData[8]= (byte) ((String) objects1.get(options3)).charAt(0);
+                        tvLpLsh.setText(""+ (char)setIdSendData[5]+ (char)setIdSendData[6]+ (char)setIdSendData[7]+ (char)setIdSendData[8]);
+                    }
+                }).setSelectOptions(options).build();
+                build.setNPicker(objects1,objects2,objects2);
+                build.show();
+                break;
+            case R.id.bt_set_lp_id_comfirm:
+                writeData(mDeviceMirror, setIdSendData);
+                break;
+            case R.id.bt_set_lp_time:
+                //时间选择器
+                TimePickerView pvIdLPTime = new TimePickerBuilder(MainActivity.this, new OnTimeSelectListener() {
+                    @Override
+                    public void onTimeSelect(Date date, View v) {
+                        Calendar selectedDate = Calendar.getInstance();
+                        selectedDate.setTime(date);
+                        setIdSendData[0] = 0x0F;
+                        setIdSendData[1] = (byte) ((selectedDate.get(Calendar.YEAR) + "").charAt(2));
+                        setIdSendData[2] = (byte) ((selectedDate.get(Calendar.YEAR) + "").charAt(3));
+                        if (selectedDate.get(Calendar.MONTH) + 1 >= 10) {
+                            Log.d(TAG, "month==" + (selectedDate.get(Calendar.MONTH) + 1) + "");
+                            setIdSendData[3] = (byte) (((selectedDate.get(Calendar.MONTH) + 1) + "").charAt(0));
+                            setIdSendData[4] = (byte) ((selectedDate.get(Calendar.MONTH) + 1) + "").charAt(1);
+                        } else {
+                            setIdSendData[3] = '0';
+                            setIdSendData[4] = (byte) ((selectedDate.get(Calendar.MONTH) + 1) + "").charAt(0);
+                        }
+                        tvLpTime.setText( ""+(char)setIdSendData[1]+ (char)setIdSendData[2]+ (char)setIdSendData[3]+ (char)setIdSendData[4]);
+
+                    /*    if (selectedDate.get(Calendar.DAY_OF_MONTH) >= 10) {
+                            setIdSendData[5] = (byte) (selectedDate.get(Calendar.DAY_OF_MONTH) + "").charAt(0);
+                            setIdSendData[6] = (byte) (selectedDate.get(Calendar.DAY_OF_MONTH) + "").charAt(1);
+                        } else {
+                            setIdSendData[5] = '0';
+                            setIdSendData[6] = (byte) (selectedDate.get(Calendar.DAY_OF_MONTH) + "").charAt(0);
+                        }*/
+                    }
+                }).setType(new boolean[]{true, true, false, false, false, false}).build();// 默认全部显示.build();
+                pvIdLPTime.show();
+                break;
             case R.id.bt_set_time:
                 //时间选择器
                 TimePickerView pvIdTime = new TimePickerBuilder(MainActivity.this, new OnTimeSelectListener() {
@@ -1690,7 +1762,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onDeviceFound(BluetoothLeDevice bluetoothLeDevice) {
 
             //Log.d(TAG, "onDeviceFound");
-            if (bluetoothLeDevice.getName() != null && (bluetoothLeDevice.getName().contains("Endoc")||bluetoothLeDevice.getName().contains("EDC"))) {
+            if (bluetoothLeDevice.getName() != null && (bluetoothLeDevice.getName().contains("Endoc")||bluetoothLeDevice.getName().contains("EDC")||bluetoothLeDevice.getName().contains("71"))) {
                 if (!data_list.contains(bluetoothLeDevice.getName())) {//如果搜索到没有存在设备列表的数据,那么直接添加
                     if (bluetoothLeDevice.getName().equals(deviceName)) {
                         ViseBle.getInstance().connect(bluetoothLeDevice, xiaoConCallback);
