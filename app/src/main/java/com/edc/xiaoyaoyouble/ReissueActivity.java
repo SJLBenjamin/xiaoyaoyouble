@@ -36,7 +36,7 @@ public class ReissueActivity extends AppCompatActivity {
     private ReissueAdapter mReissueAdapter;
     static int countX = 0;
     static int countY = 0;
-
+    private TextView tvPathName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,10 +76,11 @@ public class ReissueActivity extends AppCompatActivity {
             all1 = LitePal.where("Blename = ?", deviceName).find(Reissue.class);
         }
 
-        String excelFileName = "/" + deviceName + "_" + replace + ".xls";
+        String excelFileName = "/" + deviceName + "(" + replace +")"+ ".xls";
         filePath = filePath + excelFileName;
         ExcelUtil.initExcel(filePath, title);
         ExcelUtil.writeObjListToExcelToReceive(all1, filePath, getContext());//此处需要注意,函数里面会调用对应的Bean类,所以每次重新生成的bean对象,需要重写此函数
+        tvPathName.setText(filePath);
         Toast.makeText(this, "数据已导出,路径为" + filePath, Toast.LENGTH_LONG).show();
         // shareFile(getContext(),new File(filePath));
     }
@@ -115,11 +116,11 @@ public class ReissueActivity extends AppCompatActivity {
         } else {
             all1 = LitePal.where("Blename = ?", deviceName).find(ReissueToRom.class);
         }
-        String excelFileName = "/" + deviceName + "_" + replace + ".xls";
+        String excelFileName = "/" + deviceName + "(" + replace+")" + ".xls";
         filePath = filePath + excelFileName;
         ExcelUtil.initExcel(filePath, title);
         ExcelUtil.writeObjListToExcelToReceiveRom(all1, filePath, getContext());//此处需要注意,函数里面会调用对应的Bean类,所以每次重新生成的bean对象,需要重写此函数
-        Toast.makeText(this, "数据已导出,路径为" + filePath, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "数据已导出,路径为" + filePath, Toast.LENGTH_LONG).show();
         // shareFile(getContext(),new File(filePath));
 
     }
@@ -131,6 +132,9 @@ public class ReissueActivity extends AppCompatActivity {
         Button tvReadRom;
 
         tvReadRom = (Button) findViewById(R.id.tv_read_rom);
+
+
+        tvPathName = (TextView) findViewById(R.id.tv_path_name);
 
         tvReadRom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,8 +150,10 @@ public class ReissueActivity extends AppCompatActivity {
         tvExportAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exportFileToReciver("/AndroidTestUtilsExcelReciver", new String[]{"详细数据", "时间", "编号", "名字"});
-                exportFileToReciverToRom("/AndroidTestUtilsExcelReciverRom", new String[]{"详细数据", "时间", "编号", "名字"});
+             /*   exportFileToReciver("/AndroidTestUtilsExcelReciver", new String[]{"详细数据", "时间", "编号", "名字"});
+                exportFileToReciverToRom("/AndroidTestUtilsExcelReciverRom", new String[]{"详细数据", "时间", "编号", "名字"});*/
+                exportFileToReciver("/EDC_Reciver", new String[]{"详细数据", "时间", "编号", "名字"});
+                exportFileToReciverToRom("/EDC_ReciverRom", new String[]{"详细数据", "时间", "编号", "名字"});
             }
         });
 
@@ -162,8 +168,20 @@ public class ReissueActivity extends AppCompatActivity {
             }
         });
         mReissueAdapter = new ReissueAdapter();
-        mAll = LitePal.findAll(Reissue.class);
-        mListView.setAdapter(mReissueAdapter);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mAll = LitePal.findAll(Reissue.class);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mListView.setAdapter(mReissueAdapter);
+                    }
+                });
+            }
+        }).start();
+
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

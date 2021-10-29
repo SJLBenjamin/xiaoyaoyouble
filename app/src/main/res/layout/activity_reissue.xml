@@ -12,12 +12,20 @@
         android:text="清除所有数据"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
     <Button
         android:id="@+id/tv_export_all"
         android:text="导出所有数据"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/tv_path_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+
     <Button
         android:id="@+id/tv_read_rom"
         android:text="读取物理地址数据"
