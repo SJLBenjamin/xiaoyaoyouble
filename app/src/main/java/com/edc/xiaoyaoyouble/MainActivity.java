@@ -1165,13 +1165,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tvDataPackage.setText("");
                 String bdata = etBData.getText().toString();
                 String kdata = etKData.getText().toString();
+                if(bdata.length()>5){
+                    Toast.makeText(mContext,"B值长度过长",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if(bdata.charAt(0)!='+'&&bdata.charAt(0)!='-'){
+                    Toast.makeText(mContext,"B值首位不为+或-",Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                char[] bChars =new char[5];
+                if(bdata.length()<5){
+                    int length = 5 - bdata.length();
+                    char[] bChars1 = bdata.toCharArray();
+                    for (int i = 1; i <=length ; i++) {
+                        bChars[i]='0';
+                    }
+                    System.arraycopy(bChars1,0,bChars,length-1,bChars1.length);
+                    bdata=bChars.toString();
+                }
+                Log.d(TAG,"bdata "+bdata);
+
+                if(kdata.length()>5){
+                    Toast.makeText(mContext,"K值长度过长",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                char[] kChars =new char[5];
+                if(kdata.length()<5){
+                    int kLength = 5 - kdata.length();
+                    char[] kChars1 = kdata.toCharArray();
+                    for (int i = 0; i <kLength; i++) {
+                        kChars[i]='0';
+                    }
+                    System.arraycopy(kChars1,0,kChars,kLength,kChars1.length);
+                    kdata=kChars.toString();
+                }
+                Log.d(TAG,"kdata "+kdata);
+
                 Log.i(TAG, "bdata length=" + bdata.length());
                 // byte[] sendData10 = {0x0b, (byte) Integer.parseInt(kdata.charAt(0) + ""), (byte) Integer.parseInt(kdata.charAt(1) + ""), (byte) Integer.parseInt(kdata.charAt(2) + ""), (byte) Integer.parseInt(kdata.charAt(3) + ""), (byte) Integer.parseInt(kdata.charAt(4) + ""),(byte) bdata.charAt(0), (byte) Integer.parseInt(bdata.charAt(1) + ""), (byte) Integer.parseInt(bdata.charAt(2) + ""), (byte) Integer.parseInt(bdata.charAt(3) + ""), (byte) Integer.parseInt(bdata.charAt(4) + ""), 0, 0};
                 //bdata.length()>0?(byte) Integer.parseInt(kdata.charAt(0) + ""):0;
                 byte[] sendData10 = {0x0b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
                 //byte c ='+';
                 for (int i = 0; i < bdata.length() && i < 5; i++) {
-                    sendData10[1 + i] = (byte) Integer.parseInt(kdata.charAt(i) + "");
+                    if(i==0){
+                        sendData10[1]=(byte) kdata.charAt(0);
+                    }else {
+                        sendData10[1 + i] = (byte) Integer.parseInt(kdata.charAt(i) + "");
+                    }
+
                 }
                 for (int j = 0; j < kdata.length() && j < 5; j++) {
                     if (j == 0) {
@@ -1790,7 +1832,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initXiaoYaoBle() {
         ViseBle.config()
-                .setScanTimeout(10 * 1000)//扫描超时时间，这里设置为永久扫描
+                .setScanTimeout(6 * 1000)//扫描超时时间，这里设置为永久扫描
                 .setConnectTimeout(10 * 1000)//连接超时时间
                 .setOperateTimeout(5 * 1000)//设置数据操作超时时间
                 .setConnectRetryCount(3)//设置连接失败重试次数
