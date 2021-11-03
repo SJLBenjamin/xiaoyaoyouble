@@ -1181,8 +1181,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     for (int i = 1; i <=length ; i++) {
                         bChars[i]='0';
                     }
-                    System.arraycopy(bChars1,0,bChars,length-1,bChars1.length);
-                    bdata=bChars.toString();
+                    bChars[0]=bChars1[0];
+                    System.arraycopy(bChars1,1,bChars,length+1,bChars1.length-1);
+                    bdata=new String(bChars);
                 }
                 Log.d(TAG,"bdata "+bdata);
 
@@ -1198,7 +1199,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         kChars[i]='0';
                     }
                     System.arraycopy(kChars1,0,kChars,kLength,kChars1.length);
-                    kdata=kChars.toString();
+                    kdata=new String(kChars);
                 }
                 Log.d(TAG,"kdata "+kdata);
 
