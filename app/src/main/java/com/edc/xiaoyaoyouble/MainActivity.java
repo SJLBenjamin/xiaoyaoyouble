@@ -1208,15 +1208,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //bdata.length()>0?(byte) Integer.parseInt(kdata.charAt(0) + ""):0;
                 byte[] sendData10 = {0x0b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
                 //byte c ='+';
-                for (int i = 0; i < bdata.length() && i < 5; i++) {
-                    if(i==0){
+                //for (int i = 0; i < bdata.length() && i < 5; i++) {
+                    for (int i = 0; i < kdata.length() && i < 5; i++) {
+                        sendData10[1 + i] = (byte) Integer.parseInt(kdata.charAt(i) + "");
+                   /* if(i==0){
                         sendData10[1]=(byte) kdata.charAt(0);
                     }else {
                         sendData10[1 + i] = (byte) Integer.parseInt(kdata.charAt(i) + "");
-                    }
+                    }*/
 
                 }
-                for (int j = 0; j < kdata.length() && j < 5; j++) {
+                //for (int j = 0; j < kdata.length() && j < 5; j++) {
+                    for (int j = 0; j < bdata.length() && j < 5; j++) {
                     if (j == 0) {
                         sendData10[6 + j] = (byte) bdata.charAt(0);
                     } else {
