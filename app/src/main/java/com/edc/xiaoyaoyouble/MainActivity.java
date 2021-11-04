@@ -504,6 +504,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     isIssue = false;
                                 }
 
+
                                 if (receiveData[3] == 0x07 || receiveData[3] == 0x17 ||receiveData[3]==0x34) {//表示当前为补发指令
                                     switch (receiveData[15]) {
                                         case 0://数据匹配
@@ -676,12 +677,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }*/
                                 if (receiveData[3] == 0x20) {//app绑定操作
                                     if (receiveData[10] != 1) {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(MainActivity.this, "绑定成功", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                                        Toast.makeText(MainActivity.this, "绑定成功", Toast.LENGTH_SHORT).show();
+
                                     }
                                     //发送解绑
 //                                    byte[] accountBytes = BitFieldUtils.biteFieldToByteArray("13612874251");
@@ -689,18 +686,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                                    mDeviceMirror.writeData(sendData(unBindData));
                                 }
                                 if (receiveData[3] == 0x21) {//解绑操作
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(MainActivity.this, "解绑成功", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                                    Toast.makeText(MainActivity.this, "解绑成功", Toast.LENGTH_SHORT).show();
                                 }
                                 if (receiveData[3] == 0x22) {//保持连接操作
 
                                 }
                                 if (receiveData[3] == 0x14) {//辅助调试
 
+                                }
+                                if(receiveData[3]==0x0e){//查询当前状态
+                                    if(receiveData[4]==2){//
+                                        Toast.makeText(MainActivity.this, "√√√采集流程未复位√√√", Toast.LENGTH_LONG).show();
+                                    }else if(receiveData[4]==0){
+                                        Toast.makeText(MainActivity.this, "XXX采集流程已复位XXX", Toast.LENGTH_LONG).show();
+                                    }
                                 }
                                 tvReceiveData.setText(bytesToHexString(receiveData, receiveData.length));
                             }
