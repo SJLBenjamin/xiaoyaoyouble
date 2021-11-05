@@ -485,9 +485,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     IsSendReadCMData = false;
                                     byte[] b = new byte[5];
                                     System.arraycopy(receiveData, 4, b, 0, 5);
-                                    tvKData.setText("k值" + Arrays.toString(b));
+                                    //tvKData.setText("k值" + Arrays.toString(b));
+                                    tvKData.setText("k值:" + (b[0]*10000+b[1]*1000+b[2]*100+b[3]*10+b[4]));
                                     System.arraycopy(receiveData, 9, b, 0, 5);
-                                    tvBData.setText("b值" + Arrays.toString(b));
+                                    //tvBData.setText("b值" + Arrays.toString(b));
+                                    tvBData.setText("  b值:" +((char)b[0])+ (b[1]*1000+b[2]*100+b[3]*10+b[4]));
                                 }
                                 if (receiveData[3] == 0x0d) {
                                     IsVersionCMData = false;
