@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btDelay.setOnClickListener(this);
         mMBtTimeSelect.setOnClickListener(this);
         mMBtReissue.setOnClickListener(this);
-
+        findViewById(R.id.bt_zf).setOnClickListener(this);//正负号选择
         findViewById(R.id.bt_app_pause_cmd).setOnClickListener(this);
         findViewById(R.id.bt_app_continue_cmd).setOnClickListener(this);
         findViewById(R.id.bt_app_device_status).setOnClickListener(this);//当前设备状态
@@ -627,6 +627,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     showSencondData += "  bat==" + df.format(batL);
                                     int cL = bytesToInt(receiveData[13], receiveData[14]);
                                     showSencondData += "  序列号=" + cL;
+                                    int result =cL-1439;
+                                    if(result<=0){
+                                        result=0x00;
+                                    }
+
+                                    //writeData(mDeviceMirror, sendData16);
+                                    mMEtSerial.setText(result+"");
                                     tvDataPackage.setText(showSencondData);
                                 }
 
@@ -698,11 +705,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                                 if(receiveData[3]==0x0e){//查询当前状态
                                     if(receiveData[4]==2){//
-                                        Toast.makeText(MainActivity.this, "√√√采集流程未复位√√√", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(MainActivity.this, "√√√采集流程正常√√√", Toast.LENGTH_LONG).show();
                                     }else if(receiveData[4]==0){
-                                        Toast.makeText(MainActivity.this, "XXX采集流程已复位XXX", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(MainActivity.this, "XXX采集流程异常XXX", Toast.LENGTH_LONG).show();
                                     }
                                 }
+
                                 tvReceiveData.setText(bytesToHexString(receiveData, receiveData.length));
                             }
                         });
@@ -894,8 +902,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mDeviceMirror.writeData(sendData(bindData));
                     isFirst = false;
                 }
-                Log.d(TAG, "WriteonSuccess==" + bytesToHexString(data, data.length));
-            }
+               if(data!=null){
+                    Log.d(TAG, "WriteonSuccess==" + bytesToHexString(data, data.length));
+            }}
 
             @Override
             public void onFailure(BleException exception) {
@@ -1160,6 +1169,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tvDataPackage.setText("");
                 byte[] sendData9 = {0x0c, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
                 writeData(mDeviceMirror, sendData9);
+                break;
+            case R.id.bt_zf:
+                final List strings = new ArrayList<String>();
+                strings.add("+");
+                strings.add("-");
+                OptionsPickerView<Object> build3 = new OptionsPickerBuilder(MainActivity.this, new OnOptionsSelectListener() {
+                    @Override
+                    public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                        etBData.setText((String) strings.get(options1));
+                    }
+                }).setSelectOptions(options).build();
+                build3.setPicker(strings);
+                build3.show();
                 break;
             case R.id.bt_set_test_cmd://设置命令参数
                 tvReceiveData.setText("");

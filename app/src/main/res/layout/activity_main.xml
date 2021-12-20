@@ -264,10 +264,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:text="b值:" />
-
+                <Button
+                    android:id="@+id/bt_zf"
+                    android:text="+/-"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"/>
                 <EditText
                     android:id="@+id/et_b_data"
-                    android:layout_width="wrap_content"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:inputType="phone" />
 
